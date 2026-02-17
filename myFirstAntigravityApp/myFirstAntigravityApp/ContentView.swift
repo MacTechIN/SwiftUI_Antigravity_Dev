@@ -22,9 +22,9 @@ struct ContentView: View {
                     Image(systemName: "hand.wave.fill")
                         .font(.system(size: 100))
                         .foregroundColor(.blue)
-                        .rotationEffect(.degrees(isWaving ? 20 : -20))
+                        .rotationEffect(.degrees(isWaving ? 20 : -10))
                         .animation(
-                            .easeInOut(duration: 0.8).repeatForever(autoreverses: true),
+                            .easeInOut(duration: 0.9).repeatForever(autoreverses: true),
                             value: isWaving
                         )
                     

@@ -4,8 +4,6 @@
 
 ---
 
----
-
 ## 🗓️ 2026-02-17 (월)
 
 ### 🕙 15:11 - [기능 구현] 아이콘 애니메이션 및 화면 전환 추가
@@ -297,13 +295,13 @@ AI 어시스턴트 '아론(Aaron)'과 함께 만드는 첫 번째 네이티브 i
 - **주요 내용:** 대표님(Sam LEE)의 이메일 정보와 현 프로젝트의 V0.1.0 단계 명시.
 - **결과:** GitHub 원격 저장소 메인 페이지에서 프로젝트 정보를 한눈에 확인할 수 있게 됨.
 
----
-
 ### 🕙 14:38 - [이전 단계 요약] 첫 번째 UI 구현 및 디버깅
+
 - **요약:** `ContentView.swift` 수정 가이드 및 `Cannot find ContentView` 오류 해결.
 - **결과:** 파란색 배경, 인사말, 손 흔드는 아이콘, '시작하기' 버튼이 포함된 첫 UI 구현 완료.
 
 ### 🕙 14:34 - [이전 단계 요약] Xcode 프로젝트 생성 및 초기 설정
+
 - **요약:** `MyFirstAntigravityApp` 프로젝트 생성 가이드 (No Testing System).
 - **결과:** `/Users/sl/Workspace/05.swiftui/AntigravityWorking` 경로에 프로젝트 생성 완료.
 
@@ -331,3 +329,86 @@ AI 어시스턴트 '아론(Aaron)'과 함께 만드는 첫 번째 네이티브 i
 - **Opaque Type의 위치:** `some View`는 프로퍼티나 함수의 리턴 타입 위치에만 사용해야 합니다.
 
 ---
+
+### 🕙 15:50 - [아키텍처 개선] ObservableObject에서 @Observable 매크로로 전환
+
+#### 📝 문제 상황 및 해결책
+- **문제:** `DashboardViewModel`에 `ObservableObject` 프로토콜을 적용했을 때 `does not conform` 빌드 에러 발생.
+- **원인:** iOS 17+ 환경에서는 기존의 `ObservableObject` 대신 더 현대적이고 성능이 우수한 `Observation` 프레임워크 사용이 권장됩니다.
+- **해결:**
+  - `DashboardViewModel`에 `@Observable` 매크로 도입.
+  - `MainDashboardView`에서 `@StateObject` 대신 `@State`를 사용하여 데이터 관찰.
+
+#### 💡 변경된 코드 스니펫
+
+```swift
+// DashboardViewModel.swift
+import Observation
+
+@Observable
+class DashboardViewModel {
+    var stats: [DashboardStat] = []
+    // @Published 키워드 불필요
+}
+
+// MainDashboardView.swift
+struct MainDashboardView: View {
+    @State private var viewModel = DashboardViewModel() // @StateObject -> @State
+}
+```
+
+#### [요약: 아키텍처 전환]
+- **작업 내용:** 최신 SwiftUI 표준인 Observation 프레임워크 적용 완료.
+- **결과:** 빌드 에러 해결 및 데이터 흐름의 효율성 증대.
+
+### 🕙 15:52 - [빌드 오류 수정] Color.tertiaryLabel 참조 오류 해결
+
+- **요약:** `MainDashboardView.swift`에서 `Color.tertiaryLabel`을 사용하는 코드가 빌드 에러를 유발하여 `.foregroundStyle(.tertiary)`로 수정.
+- **결과:** SwiftUI의 표준 계층적 스타일을 사용하여 빌드 오류를 해결하고 가독성을 확보함.
+
+### 🕙 16:05 - [기능 구현] 전체 작업 서브페이지 연동 완료
+
+- **요약:** '전체 작업' 카드 클릭 시 12가지 하부 작업을 확인할 수 있는 `TaskListView` 서브페이지 구현 및 데이터 연동 완료.
+- **결과:** 사용자 요청에 따른 12가지 목업 데이터 구성 및 NavigationLink를 통한 화면 전환 처리 완료.
+
+### 🕙 16:10 - [빌드 오류 수정] TaskListView.swift 내 tertiary 스타일 오류 해결
+
+- **요약:** `TaskListView.swift`에서 `Color` 타입에 존재하지 않는 `.tertiary` 멤버를 `.foregroundColor`로 호출하여 발생한 빌드 에러 해결.
+- **해결:** `.foregroundColor(.tertiary)`를 최신 SwiftUI 스타일인 `.foregroundStyle(.tertiary)`로 수정하여 정상 빌드 확인.
+
+---
+
+### 🕙 16:20 - [기능 구현] 작업 상세 뷰(TaskDetailView) 및 상태 변경 연동
+
+- **요약:** 개별 작업의 상세 내용을 확인하고 상태(대기 중/진행 중/완료됨)를 변경할 수 있는 `TaskDetailView` 구현 완료.
+- **주요 내용:**
+  - `@Observable` 기반의 `DashboardViewModel`을 공유하여 상태 변경 시 실시간으로 데이터 저장 및 통계 반영.
+  - `TaskListView`와의 내비게이션 연결 완료.
+
+### 🕙 16:25 - [기능 구현] 필터링 기능 및 대시보드 연동 최적화
+
+- **요약:** 대시보드의 '진행 중', '완료' 카드를 클릭했을 때 해당 상태의 작업만 보여주는 필터링 기능 구현.
+- **주요 내용:**
+  - `TaskListView`에 `filterStatus` 파라미터를 추가하여 조건부 리스트 렌더링.
+  - `MainDashboardView`의 모든 스탯 카드를 `NavigationLink`로 감싸 데이터 접근성 강화.
+
+### 🕙 16:30 - [모델 수정] AppTask 구조체 이니셜라이저 수정
+
+- **요약:** `AppTask`의 `id`가 `let`으로 선언되어 업데이트 시 초기화에 실패하던 문제 해결.
+- **해결:** 명시적 이니셜라이저를 추가하여 `id`를 보존하면서 필드만 업데이트할 수 있도록 수정.
+
+---
+
+### 🕙 16:40 - [트러블슈팅] 실제 기기 배포 오류 해결
+
+- **현상:** Xcode에서 "A build only device cannot be used to run this target" 오류 발생 및 아이폰 설정에 "개발자 앱" 메뉴 미표시.
+- **원인:**
+  - Xcode 상단 대상 기기가 실제 기기가 아닌 'Any iOS Device'로 선택되어 빌드 및 실행(Cmd+R)이 불가능한 상태.
+  - 앱이 기기에 아직 설치되지 않았기 때문에 아이폰 설정의 "VPN 및 기기 관리"에 신뢰 메뉴가 나타나지 않음.
+- **조치:**
+  - 상단 툴바에서 실제 연결된 아이폰 이름을 선택하도록 가이드.
+  - 성공적인 첫 빌드 후 신뢰 메뉴가 나타남을 안내.
+- **결과:** 사용자가 실제 기기에서 앱이 정상 작동함을 확인.
+
+---
+**[2026-02-17] 안티그래비티 iOS 프로젝트 V1.0.0 배포 준비 완료.**

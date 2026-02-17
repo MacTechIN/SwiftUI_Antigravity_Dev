@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MainDashboardView: View {
-    @StateObject private var viewModel = DashboardViewModel()
+    @State private var viewModel = DashboardViewModel()
     
     let columns = [
         GridItem(.flexible()),
@@ -24,12 +24,27 @@ struct MainDashboardView: View {
                 // Stat Cards
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(viewModel.stats) { stat in
-                        DashboardCard(
-                            title: stat.title,
-                            value: stat.value,
-                            icon: stat.icon,
-                            color: stat.color
-                        )
+                        NavigationLink {
+                            if stat.title == "전체 작업" {
+                                TaskListView(viewModel: viewModel)
+                            } else if stat.title == "진행 중" {
+                                TaskListView(viewModel: viewModel, filterStatus: .inProgress)
+                            } else if stat.title == "완료" {
+                                TaskListView(viewModel: viewModel, filterStatus: .completed)
+                            } else {
+                                // Default or other views
+                                Text("\(stat.title) 상세 뷰 준비 중")
+                            }
+                        } label: {
+                            DashboardCard(
+                                title: stat.title,
+                                value: stat.value,
+                                icon: stat.icon,
+                                color: stat.color
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .disabled(stat.title == "이력 로그") // Disable for now if not implemented
                     }
                 }
                 
@@ -114,7 +129,7 @@ struct ActivityRow: View {
             
             Text(activity.timestamp)
                 .font(.caption2)
-                .foregroundColor(.tertiaryLabel)
+                .foregroundStyle(.tertiary)
         }
         .padding()
         .background(Color(UIColor.secondarySystemGroupedBackground))
