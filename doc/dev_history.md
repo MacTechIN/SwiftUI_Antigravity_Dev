@@ -4,7 +4,198 @@
 
 ---
 
+---
+
 ## 🗓️ 2026-02-17 (월)
+
+### 🕙 15:11 - [기능 구현] 아이콘 애니메이션 및 화면 전환 추가
+
+#### [전체 결과 텍스트: MainDashboardView.swift]
+
+```swift
+import SwiftUI
+
+struct MainDashboardView: View {
+    let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+    
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("대시보드")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    Text("안티그래비티 프로젝트의 진행 상황입니다.")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.top)
+                
+                LazyVGrid(columns: columns, spacing: 16) {
+                    DashboardCard(title: "전체 작업", value: "12", icon: "checklist", color: .blue)
+                    DashboardCard(title: "진행 중", value: "3", icon: "clock.fill", color: .orange)
+                    DashboardCard(title: "완료", value: "9", icon: "checkmark.circle.fill", color: .green)
+                    DashboardCard(title: "이력 로그", value: "4", icon: "doc.text.fill", color: .purple)
+                }
+                
+                Text("최근 활동")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .padding(.top)
+                
+                ForEach(0..<3) { _ in
+                    HStack {
+                        Image(systemName: "arrow.up.circle.fill")
+                            .foregroundColor(.blue)
+                        VStack(alignment: .leading) {
+                            Text("GitHub 푸시 완료")
+                                .font(.headline)
+                            Text("V0.1.0 초기 설정 업데이트")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Text("방금 전")
+                            .font(.caption2)
+                            .foregroundColor(.tertiaryLabel)
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(12)
+                }
+            }
+            .padding()
+        }
+        .navigationTitle("Main")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct DashboardCard: View {
+    let title: String
+    let value: String
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Image(systemName: icon)
+                .font(.title)
+                .foregroundColor(color)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(value)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(color.opacity(0.1))
+        .cornerRadius(16)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(color.opacity(0.2), lineWidth: 1)
+        )
+    }
+}
+```
+
+#### [전체 결과 텍스트: ContentView.swift]
+
+```swift
+import SwiftUI
+
+struct ContentView: View {
+    @State private var isWaving = false
+    @State private var navigateToDashboard = false
+    
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.blue.opacity(0.2), Color.white]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                VStack(spacing: 30) {
+                    Spacer()
+                    
+                    Image(systemName: "hand.wave.fill")
+                        .font(.system(size: 100))
+                        .foregroundColor(.blue)
+                        .rotationEffect(.degrees(isWaving ? 20 : -20))
+                        .animation(
+                            .easeInOut(duration: 0.8).repeatForever(autoreverses: true),
+                            value: isWaving
+                        )
+                    
+                    VStack(spacing: 12) {
+                        Text("반가워요, Sam!")
+                            .font(.system(size: 34, weight: .bold, design: .rounded))
+                        
+                        Text("우리의 첫 번째 항해를 시작할 준비가 되셨나요?")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        navigateToDashboard = true
+                    }) {
+                        HStack {
+                            Text("시작하기")
+                                .fontWeight(.semibold)
+                            Image(systemName: "chevron.right")
+                        }
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.blue, Color.cyan]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(15)
+                        .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 5)
+                    }
+                    .padding(.horizontal, 40)
+                    .padding(.bottom, 30)
+                }
+                .padding()
+            }
+            .onAppear {
+                isWaving = true
+            }
+            .navigationDestination(isPresented: $navigateToDashboard) {
+                MainDashboardView()
+            }
+        }
+    }
+}
+```
+
+#### [요약]
+
+- **작업 내용:** Phase 2 애니메이션 및 화면 전환 기능 구현 완료.
+- **주요 변경점:**
+    - `hand.wave.fill` 아이콘에 `rotationEffect` 애니메이션 적용.
+    - `NavigationStack` 및 `navigationDestination`을 이용해 `MainDashboardView`로의 화면 전환 구현.
+    - 대시보드 화면(`MainDashboardView.swift`) 신규 디자인 및 카드 레이아웃 적용.
+- **결과:** 정적인 UI에서 동적인 UX로 업그레이드되었으며, GitHub 푸시 완료.
 
 ### 🕙 15:03 - [기록 방식 업데이트] 전체 결과 텍스트 + 요약 도입
 

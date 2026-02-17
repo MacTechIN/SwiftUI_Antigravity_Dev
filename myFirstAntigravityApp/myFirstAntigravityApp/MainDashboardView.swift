@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct MainDashboardView: some View {
+struct MainDashboardView: View {
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
@@ -48,7 +48,7 @@ struct MainDashboardView: some View {
                         Spacer()
                         Text("방금 전")
                             .font(.caption2)
-                            .foregroundColor(.tertiaryLabel)
+                            .foregroundColor(.secondary)
                     }
                     .padding()
                     .background(Color.gray.opacity(0.1))
