@@ -427,5 +427,13 @@ struct MainDashboardView: View {
   - MVVM 아키텍처 및 SwiftUI 기초 개념/용어 정리.
   - `doc/antigravity_swiftui_guide.ko.md` 파일 생성.
 
+### 🕙 17:10 - [문서화] KIMI 개발 프로세스 및 UI 파이프라인 가이드 추가
+
+- **요약:** 사용자가 추가한 KIMI 전용 iOS 개발 프로세스와 UI 시각화 파이프라인 문서를 저장소에 반영.
+- **주요 내용:**
+  - `doc/Ai iOS Dev Process(KIMI)`: AI 협업을 위한 보강된 12단계 프로세스.
+  - `doc/UI Idea to reeal Proces (KIMI)`: 아이디어를 현실적인 UI로 구현하는 6단계 파이프라인.
+- **결과:** Git 푸시 완료 및 문서 자산화.
+
 ---
-**[2026-02-17] 안티그래비티 iOS 프로젝트 V1.0.0 배포 및 가이드 작성 완료.**
+**[2026-02-17] 안티그래비티 iOS 프로젝트 V1.0.0 최종 가이드 및 외부 레퍼런스 통합 완료.**
