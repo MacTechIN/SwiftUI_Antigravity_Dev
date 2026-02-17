@@ -188,18 +188,18 @@ struct ContentView: View {
 }
 ```
 
-#### [요약]
+#### [요약: Phase 2 구현]
 
 - **작업 내용:** Phase 2 애니메이션 및 화면 전환 기능 구현 완료.
 - **주요 변경점:**
-    - `hand.wave.fill` 아이콘에 `rotationEffect` 애니메이션 적용.
-    - `NavigationStack` 및 `navigationDestination`을 이용해 `MainDashboardView`로의 화면 전환 구현.
-    - 대시보드 화면(`MainDashboardView.swift`) 신규 디자인 및 카드 레이아웃 적용.
+  - `hand.wave.fill` 아이콘에 `rotationEffect` 애니메이션 적용.
+  - `NavigationStack` 및 `navigationDestination`을 이용해 `MainDashboardView`로의 화면 전환 구현.
+  - 대시보드 화면(`MainDashboardView.swift`) 신규 디자인 및 카드 레이아웃 적용.
 - **결과:** 정적인 UI에서 동적인 UX로 업그레이드되었으며, GitHub 푸시 완료.
 
 ### 🕙 15:03 - [기록 방식 업데이트] 전체 결과 텍스트 + 요약 도입
 
-#### [전체 결과 텍스트: ContentView.swift]
+#### [전체 결과 텍스트: ContentView.swift v1]
 
 ```swift
 import SwiftUI
@@ -248,7 +248,7 @@ struct ContentView: View {
 }
 ```
 
-#### [요약]
+#### [요약: Git 초기화]
 
 - **작업 내용:** 로컬 Git 저장소 초기화 및 원격 저장소 푸시 성공.
 - **원격 저장소:** `https://github.com/MacTechIN/SwiftUI_Antigravity_Dev.git`
@@ -291,7 +291,7 @@ AI 어시스턴트 '아론(Aaron)'과 함께 만드는 첫 번째 네이티브 i
 상세한 개발 과정은 [doc/dev_history.md](doc/dev_history.md)에서 확인하실 수 있습니다.
 ```
 
-#### [요약]
+#### [요약: README 작성]
 
 - **작업 내용:** 프로젝트 목적, 진행 상황, 저자 정보(Sam LEE)를 포함한 `README.md` 파일 생성 및 Git 푸시.
 - **주요 내용:** 대표님(Sam LEE)의 이메일 정보와 현 프로젝트의 V0.1.0 단계 명시.
@@ -310,3 +310,24 @@ AI 어시스턴트 '아론(Aaron)'과 함께 만드는 첫 번째 네이티브 i
 ### 🕙 14:05 - [이전 단계 요약] 전문가 페르소나 설정
 - **요약:** 10년 차 iOS 개발 전문가 '아론' 페르소나 설정 및 3단계 워크플로우 승인.
 - **결과:** 프로젝트 기본 환경(`task.md`, `implementation_plan.md`) 구축 완료.
+
+---
+
+### 🕙 15:15 - [버그 수정] MainDashboardView 컴파일 에러 분석 및 해결
+
+#### 📝 에러 종류 및 발생 원인
+1. **View 프로토콜 준수 오류 (Invalid Conformance)**
+   - **에러 종류:** 컴파일 에러 (Protocol Conformance Error)
+   - **발생 원인:** `struct MainDashboardView: some View`와 같이 정의됨. `some View`는 반환 타입에 사용되는 키워드이며, 구조체 선언부에는 프로토콜 명칭인 `View`만 와야 합니다.
+   - **해결책:** `struct MainDashboardView: View`로 수정하여 프로토콜 준수를 명확히 함.
+
+2. **표준 외 컬러 상수 참조 (Invalid Color Reference)**
+   - **에러 종류:** 심볼 참조 에러 (Reference Error)
+   - **발생 원인:** `.foregroundColor(.tertiaryLabel)`을 사용함. `.tertiaryLabel`은 UIKit의 시스템 컬러이며 SwiftUI `Color` 타입의 정적 속성으로 직접 제공되지 않음.
+   - **해결책:** 표준 SwiftUI 컬러인 `.secondary`로 변경하여 호환성 확보.
+
+#### 💡 개발자가 알아야 할 사항 (Tips)
+- **SwiftUI vs UIKit 명칭 구분:** UIKit의 `UIColor.tertiaryLabel`과 SwiftUI의 `Color.secondary` 등 명칭 체계가 다르므로 주의가 필요합니다.
+- **Opaque Type의 위치:** `some View`는 프로퍼티나 함수의 리턴 타입 위치에만 사용해야 합니다.
+
+---

@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct MainDashboardView: View {
+    @StateObject private var viewModel = DashboardViewModel()
+    
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
@@ -8,12 +10,11 @@ struct MainDashboardView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 25) {
                 // Header
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 10) {
                     Text("대시보드")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
                     Text("안티그래비티 프로젝트의 진행 상황입니다.")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -22,41 +23,33 @@ struct MainDashboardView: View {
                 
                 // Stat Cards
                 LazyVGrid(columns: columns, spacing: 16) {
-                    DashboardCard(title: "전체 작업", value: "12", icon: "checklist", color: .blue)
-                    DashboardCard(title: "진행 중", value: "3", icon: "clock.fill", color: .orange)
-                    DashboardCard(title: "완료", value: "9", icon: "checkmark.circle.fill", color: .green)
-                    DashboardCard(title: "이력 로그", value: "4", icon: "doc.text.fill", color: .purple)
-                }
-                
-                // Upcoming Tasks Section
-                Text("최근 활동")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .padding(.top)
-                
-                ForEach(0..<3) { _ in
-                    HStack {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .foregroundColor(.blue)
-                        VStack(alignment: .leading) {
-                            Text("GitHub 푸시 완료")
-                                .font(.headline)
-                            Text("V0.1.0 초기 설정 업데이트")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
-                        Text("방금 전")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                    ForEach(viewModel.stats) { stat in
+                        DashboardCard(
+                            title: stat.title,
+                            value: stat.value,
+                            icon: stat.icon,
+                            color: stat.color
+                        )
                     }
-                    .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(12)
                 }
+                
+                // Activities Section
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("최근 활동")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    VStack(spacing: 12) {
+                        ForEach(viewModel.activities) { activity in
+                            ActivityRow(activity: activity)
+                        }
+                    }
+                }
+                .padding(.top, 10)
             }
             .padding()
         }
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationTitle("Main")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -69,28 +62,64 @@ struct DashboardCard: View {
     let color: Color
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Image(systemName: icon)
-                .font(.title)
-                .foregroundColor(color)
+        VStack(alignment: .leading, spacing: 15) {
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.15))
+                    .frame(width: 44, height: 44)
+                Image(systemName: icon)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundColor(color)
+            }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(value)
-                    .font(.title2)
-                    .fontWeight(.bold)
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
                 Text(title)
                     .font(.caption)
+                    .fontWeight(.medium)
                     .foregroundColor(.secondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(color.opacity(0.1))
-        .cornerRadius(16)
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(color.opacity(0.2), lineWidth: 1)
-        )
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .cornerRadius(20)
+        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+    }
+}
+
+struct ActivityRow: View {
+    let activity: ActivityLog
+    
+    var body: some View {
+        HStack(spacing: 15) {
+            Image(systemName: activity.icon)
+                .font(.title3)
+                .foregroundColor(.blue)
+                .frame(width: 40, height: 40)
+                .background(Color.blue.opacity(0.1))
+                .clipShape(Circle())
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(activity.title)
+                    .font(.headline)
+                Text(activity.subtitle)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Text(activity.timestamp)
+                .font(.caption2)
+                .foregroundColor(.tertiaryLabel)
+        }
+        .padding()
+        .background(Color(UIColor.secondarySystemGroupedBackground))
+        .cornerRadius(15)
+        .shadow(color: Color.black.opacity(0.03), radius: 5, x: 0, y: 2)
     }
 }
 
